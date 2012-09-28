@@ -1,0 +1,18 @@
+<a href="/newproject"><button id="new-project-button" class="button right">New Project</button></a>
+
+
+<%if(request.newproject != undefined){%>
+    <div class="notification">
+        Project <%=request.newproject%> has been created. To edit click <a href="#">here</a> 
+    </div>
+<%}%>
+
+<div class="projects">
+    <% if (projects.length) { %>
+    <% projects.forEach(function(project){ %>
+      <div class="project">
+          <a href="#"><%= project.name %></a>
+      </div>
+    <% }) %>
+<% } %>
+</div>

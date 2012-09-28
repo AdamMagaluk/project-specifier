@@ -1,0 +1,94 @@
+<script type="text/javascript">
+    var jsScheme =  '<%=JSON.stringify(scheme)%>';
+    jsScheme = jsScheme.replace(/&(lt|gt|quot);/g, function (m, p) { 
+        return (p == "lt") ? "<" : ((p == "gt") ? ">" : "'");
+    });
+    jsScheme = eval('(' + jsScheme + ')');
+    
+    var newwindow;
+    function popmapselect(url)
+    {
+	newwindow=window.open(url,'Select Location','height=400,width=400');
+	if (window.focus) {newwindow.focus()}
+    }
+    
+    $(document).ready(function(){   
+        $("#save-project").click(function(){
+            
+            $(".error-text").text("");
+            
+            
+            var postObj = {};
+            var error = false;
+            for(var key in jsScheme){
+                var entry = $('.project-options .option-value[name="'+key+'"]');
+                if(entry.length == 1){
+                    var value = $(entry[0]).val();
+                    if(value.length === 0){
+                        $(".error-text",$(entry[0]).parent()).text("Must supply a value.")
+                        error = true;
+                        continue;
+                    }else{
+                        postObj[key] = value;
+                    }
+                }
+            }
+            if(!error){
+            $.post( $("form").attr("action"), postObj,
+            function( ret ) {
+                window.location = ret.redirect;
+            },"json"
+            ).error(function() {
+                alert("error");
+            });
+                
+            }
+            return false;
+        })
+    })
+
+</script>
+
+
+<h1>Create a New Project</h1>
+
+<form action="/projects/" method="post">
+
+<ul class="project-options">
+    <%
+    for(var key in scheme){
+    var entry = scheme[key];
+
+    if(entry.display !== undefined){
+    %>
+    <li class="option">
+        <lable class="option-name"><%=entry.display%>:</lable>
+        <%
+        if(typeof entry.options == "object"){
+        console.log(entry.options)
+        %>
+        <select class="option-value"  name="<%=key%>">
+            <% for(var i=0; i< entry.options.length; i++) {%>
+            <option><%= entry.options[i] %></option>
+            <% } %>
+        </select>
+        <%
+        }else if(typeof entry.location == "object"){
+            %><a href="javascript:popmapselect('location_select_popup.html');"><img height="20px" width="20px" title="<%= entry.hint %>" src="/img/compass.gif" class="input-hint"></a><%
+        }else{
+        %>
+        <input name="<%=key%>" class="option-value text-input"/>
+        <%
+        }
+        if(entry.hint != undefined){ %> <img height="20px" width="20px" title="<%= entry.hint %>" src="/img/hint-button.png" class="input-hint"><% }
+        %>
+        <div class="error-text"></div>
+    </li>
+    <%
+    }else {continue;} 
+    }
+    %>
+</ul>
+<button id="save-project" class="button" type="submit" value="save">Save</button>
+
+</form>
