@@ -3,10 +3,6 @@ var express = require('express')
   , util = require('util');
     
   
-
-
-
-
 var app = express.createServer();
 
 // configure Express
@@ -26,8 +22,9 @@ app.configure(function() {
   app.use(express.static(__dirname + '/public'));
 });
 
+
 require("./routes")(app,passport,null);
 
-app.listen(8080);
+app.listen(process.env.PORT || 8080, process.env.IP || "localhost");
 
 

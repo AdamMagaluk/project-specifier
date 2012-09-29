@@ -1,19 +1,14 @@
-var mongo = require('mongodb'),
-  Server = mongo.Server,
-  Db = mongo.Db;
 
-var server = new Server('localhost', 27017, {auto_reconnect: true});
-var db = new Db('exampleDb', server);
+var mongo = require('mongodb');
+var url = require('url');
+var log = console.log;
 
-db.open(function(err, db) {
-  if(!err) {
-    db.collection('test', function(err, collection) {
-      var doc1 = {'hello':'doc1'};
-      var doc2 = {'hello':'doc2'};
-      var lotsOfDocs = [{'hello':'doc3'}, {'hello':'doc4'}];
-      collection.insert(doc1);
-      collection.insert(doc2, {safe:true}, function(err, result) {});
-      collection.insert(lotsOfDocs, {safe:true}, function(err, result) {});
-    });
-  }
+var Server = mongo.Server,
+    Db = mongo.Db;
+
+var uri = 'mongodb://testdb:testdb@alex.mongohq.com:10036/project-specifier';
+var db = Db.connect(uri, function(error, client) {
+  if (error) throw error;
+  else console.log("Connected to "+uri)
 });
+
